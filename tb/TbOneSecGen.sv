@@ -9,6 +9,10 @@
 
 `timescale 1ns / 1ps
 
+//==============================================================================
+// Testbench Interface
+//==============================================================================
+
 interface OneSecGenIf #(
     parameter int COUNT_WIDTH = 30
 ) (
@@ -22,6 +26,10 @@ endinterface
 
 module TbOneSecGen;
 
+    //==============================================================================
+    // Testbench Parameters And State
+    //==============================================================================
+
     localparam int COUNT_WIDTH = 30;
     localparam int CLK_PERIOD  = 10;
     localparam int TEST_FREQ   = 5;
@@ -30,11 +38,19 @@ module TbOneSecGen;
     int unsigned r_error_count;
     int unsigned r_tick_count;
 
+    //==============================================================================
+    // Interface Instance
+    //==============================================================================
+
     OneSecGenIf #(
         .COUNT_WIDTH (COUNT_WIDTH)
     ) dut_if (
         .i_clk (w_clk)
     );
+
+    //==============================================================================
+    // DUT Instantiation
+    //==============================================================================
 
     OneSecGen #(
         .COUNT_WIDTH (COUNT_WIDTH)
@@ -46,10 +62,18 @@ module TbOneSecGen;
         .o_sec_tick (dut_if.o_sec_tick)
     );
 
+    //==============================================================================
+    // Clock Generation
+    //==============================================================================
+
     initial begin
         w_clk = 1'b0;
         forever #(CLK_PERIOD / 2) w_clk = ~w_clk;
     end
+
+    //==============================================================================
+    // Test Sequence
+    //==============================================================================
 
     initial begin
         init_interface();
@@ -58,6 +82,10 @@ module TbOneSecGen;
         run_pause_case();
         report_summary();
     end
+
+    //==============================================================================
+    // Initialization And Reset Tasks
+    //==============================================================================
 
     task automatic init_interface();
         begin
@@ -113,6 +141,10 @@ module TbOneSecGen;
         end
     endtask
 
+    //==============================================================================
+    // Directed Test Scenarios
+    //==============================================================================
+
     task automatic run_tick_period_case();
         begin
             dut_if.i_run_en = 1'b1;
@@ -130,6 +162,10 @@ module TbOneSecGen;
             wait_and_check_tick(TEST_FREQ);
         end
     endtask
+
+    //==============================================================================
+    // Summary Reporting
+    //==============================================================================
 
     task automatic report_summary();
         begin

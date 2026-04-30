@@ -9,6 +9,10 @@
 
 `timescale 1ns / 1ps
 
+//==============================================================================
+// Testbench Interface
+//==============================================================================
+
 interface WatchIf #(
     parameter int COUNT_WIDTH = 30,
     parameter int SEC_WIDTH   = 6,
@@ -27,6 +31,10 @@ endinterface
 
 module TbTopWatch;
 
+    //==============================================================================
+    // Testbench Parameters And State
+    //==============================================================================
+
     localparam int COUNT_WIDTH = 30;
     localparam int SEC_WIDTH   = 6;
     localparam int MIN_WIDTH   = 6;
@@ -37,6 +45,10 @@ module TbTopWatch;
     logic w_clk;
     int unsigned r_error_count;
 
+    //==============================================================================
+    // Interface Instance
+    //==============================================================================
+
     WatchIf #(
         .COUNT_WIDTH (COUNT_WIDTH),
         .SEC_WIDTH   (SEC_WIDTH),
@@ -45,6 +57,10 @@ module TbTopWatch;
     ) watch_if (
         .i_clk (w_clk)
     );
+
+    //==============================================================================
+    // DUT Instantiation
+    //==============================================================================
 
     TopWatchV2 #(
         .COUNT_WIDTH (COUNT_WIDTH),
@@ -61,10 +77,18 @@ module TbTopWatch;
         .o_hour   (watch_if.o_hour)
     );
 
+    //==============================================================================
+    // Clock Generation
+    //==============================================================================
+
     initial begin
         w_clk = 1'b0;
         forever #(CLK_PERIOD / 2) w_clk = ~w_clk;
     end
+
+    //==============================================================================
+    // Test Sequence
+    //==============================================================================
 
     initial begin
         init_interface();
@@ -73,6 +97,10 @@ module TbTopWatch;
         run_pause_case();
         report_summary();
     end
+
+    //==============================================================================
+    // Initialization And Reset Tasks
+    //==============================================================================
 
     task automatic init_interface();
         begin
@@ -128,6 +156,10 @@ module TbTopWatch;
         end
     endtask
 
+    //==============================================================================
+    // Directed Test Scenarios
+    //==============================================================================
+
     task automatic run_time_progress_case();
         begin
             watch_if.i_run_en = 1'b1;
@@ -163,6 +195,10 @@ module TbTopWatch;
             end
         end
     endtask
+
+    //==============================================================================
+    // Summary Reporting
+    //==============================================================================
 
     task automatic report_summary();
         begin
